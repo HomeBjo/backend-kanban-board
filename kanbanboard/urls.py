@@ -17,6 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+
+from tasks.views import AllTaskView, SubtaskView
+from users.views import LoginView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('login/', LoginView.as_view()),
+    path('task/', AllTaskView.as_view()),
+    path('task/<int:pk>/', AllTaskView.as_view()),
+    path('task/<int:task_id>/subtasks/', SubtaskView.as_view()),
+    path('task/<int:task_id>/subtasks/<int:pk>/', SubtaskView.as_view()),
 ]
