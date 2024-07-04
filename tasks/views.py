@@ -16,6 +16,17 @@ class AllTaskView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, pk=None, format=None):
+        """
+        Retrieves a task or a list of tasks for the authenticated user.
+
+        Parameters:
+            request (Request): The HTTP request.
+            pk (int, optional): The primary key of the task. If not provided, retrieves all tasks for the user.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: A response containing the serialized task(s).
+        """
         if pk:
             try:
                 task = Task.objects.get(pk=pk, author=request.user)
@@ -28,6 +39,16 @@ class AllTaskView(APIView):
         return Response(serializer.data)
     
     def post(self, request, format=None):
+        """
+        Creates a new task for the authenticated user.
+
+        Parameters:
+            request (Request): The HTTP request containing task data.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: A response containing the serialized task.
+        """
         serializer = TaskSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -36,6 +57,17 @@ class AllTaskView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def patch(self, request, pk, format=None):
+        """
+        Updates an existing task for the authenticated user.
+
+        Parameters:
+            request (Request): The HTTP request containing updated task data.
+            pk (int): The primary key of the task to be updated.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: A response containing the serialized updated task.
+        """
         try:
             todo = Task.objects.get(pk=pk, author=request.user)
         except Task.DoesNotExist:
@@ -48,6 +80,17 @@ class AllTaskView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk, format=None):
+        """
+        Deletes an existing task for the authenticated user.
+
+        Parameters:
+            request (Request): The HTTP request.
+            pk (int): The primary key of the task to be deleted.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: A response indicating the result of the delete operation.
+        """
         try:
             todo = Task.objects.get(pk=pk, author=request.user)
         except Task.DoesNotExist:
@@ -67,6 +110,16 @@ class SubtaskView(APIView):
             return None
         
     def get(self, request, task_id, pk, format=None):
+        """
+        Retrieves a subtask based on task ID and subtask ID.
+
+        Parameters:
+            task_id (int): The primary key of the task.
+            pk (int): The primary key of the subtask.
+
+        Returns:
+            Subtask: The subtask object if found, otherwise None.
+        """
         subtask = self.get_object(task_id, pk)
         if subtask is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -74,11 +127,22 @@ class SubtaskView(APIView):
         return Response(serializer.data)
     
     def patch(self, request, task_id, pk, format=None):
+        """
+        Updates an existing subtask for the authenticated user.
+
+        Parameters:
+            request (Request): The HTTP request containing updated subtask data.
+            task_id (int): The primary key of the task.
+            pk (int): The primary key of the subtask.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: A response containing the serialized updated subtask.
+        """
         subtask = self.get_object(task_id, pk)
         if subtask is None:
             return Response({"error": "Subtask not found or you do not have permission to edit it."}, status=status.HTTP_404_NOT_FOUND)
         
-        # Extrahiere die spezifischen Subtask-Daten
         subtask_data = None
         for data in request.data.get('subtasks', []):
             if data.get('id') == pk:
@@ -88,17 +152,25 @@ class SubtaskView(APIView):
         if not subtask_data:
             return Response({"error": "Subtask data not found in request."}, status=status.HTTP_400_BAD_REQUEST)
         
-        print("Received data for patch:", subtask_data)  # Debugging-Statement
-
         serializer = SubtaskSerializer(subtask, data=subtask_data, partial=True, context={'request': request})
         
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        print("Serializer errors:", serializer.errors)  # Debugging-Statement
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def post(self, request, task_id, format=None):
+        """
+        Creates a new subtask for a specific task for the authenticated user.
+
+        Parameters:
+            request (Request): The HTTP request containing subtask data.
+            task_id (int): The primary key of the task.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: A response containing the serialized subtask.
+        """
         try:
             task = Task.objects.get(pk=task_id, author=request.user)
         except Task.DoesNotExist:
@@ -111,6 +183,17 @@ class SubtaskView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, task_id, pk, format=None):
+        """
+        Deletes an existing task for the authenticated user.
+
+        Parameters:
+            request (Request): The HTTP request.
+            pk (int): The primary key of the task to be deleted.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: A response indicating the result of the delete operation.
+        """
         try:
            subtask = Subtask.objects.get(pk=pk, task_id=task_id)
         except Subtask.DoesNotExist:

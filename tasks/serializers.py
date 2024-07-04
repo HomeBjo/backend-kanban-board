@@ -10,7 +10,6 @@ class SubtaskSerializer(serializers.ModelSerializer):
         instance.value = validated_data.get('value', instance.value)
         instance.status = validated_data.get('status', instance.status)
         instance.save()
-        print("Subtask updated:", instance.value, instance.status)  # Debugging-Statement
         return instance
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -20,15 +19,13 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ['id', 'title', 'description', 'due_date', 'priority', 'assign_to', 'category', 'created_at', 'author', 'subtasks']
         extra_kwargs = {
-            'author': {'required': False}  # Macht das author-Feld nicht erforderlich
+            'author': {'required': False} 
         }
         
     def create(self, validated_data):
         subtasks_data = validated_data.pop('subtasks', [])
         request = self.context.get('request')
         validated_data['author'] = request.user
-        print("Validated Data:", validated_data)  # Debugging-Ausgabe
-        print("Subtasks Data:", subtasks_data)      # Debugging-Ausgabe
         task = Task.objects.create(**validated_data)
         for subtask_data in subtasks_data:
             Subtask.objects.create(task=task, **subtask_data)

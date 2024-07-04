@@ -3,9 +3,14 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-# Create your views here.
 
 class LoginView(ObtainAuthToken):
+    """
+     A view for handling user authentication and providing a token upon successful login.
+
+    This view extends the `ObtainAuthToken` and overrides the `post` method to validate the user credentials
+    and return an authentication token, user ID, and email address.
+    """
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})

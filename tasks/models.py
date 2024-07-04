@@ -2,20 +2,19 @@ from django.conf import settings
 from django.db import models
 from datetime import date
 
-# Create your models here.
 class Task(models.Model):
     title = models.CharField(max_length=100)
-    description = models.TextField(blank=True)  # Beschreibung des Tasks
-    due_date = models.DateField(null=True, blank=True)  # Fälligkeitsdatum
-    priority = models.CharField(max_length=50, choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High')], default='medium')  # Priorität des Tasks
-    assign_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')  # Benutzer, dem der Task zugewiesen ist
-    category = models.CharField(max_length=100, blank=True)  # Kategorie des Tasks
-    created_at = models.DateField(default=date.today)  # Erstellungsdatum
+    description = models.TextField(blank=True)  
+    due_date = models.DateField(null=True, blank=True) 
+    priority = models.CharField(max_length=50, choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High')], default='medium') 
+    assign_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')  
+    category = models.CharField(max_length=100, blank=True) 
+    created_at = models.DateField(default=date.today)  
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        null=True,  # author kann optional sein
-        blank=True  # author kann leer gelassen werden damit wir evt später hinzufügen können
+        null=True,  
+        blank=True  
     )
     
     def __str__(self):
