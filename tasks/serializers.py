@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from tasks.models import Task, Subtask
+from django.contrib.auth.models import User
 
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
 class SubtaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subtask
@@ -14,10 +20,14 @@ class SubtaskSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     subtasks = SubtaskSerializer(many=True, required=False)
+    assign_to = UserSerializer(read_only=True)
+    assign_to_id = serializers.PrimaryKeyRelatedField(
+    queryset=User.objects.all(), source='assign_to', write_only=True, required=False
+    )
     
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'due_date', 'priority', 'assign_to', 'category', 'created_at', 'author', 'subtasks']
+        fields = ['id', 'title', 'description', 'due_date', 'priority', 'assign_to','assign_to_id', 'category', 'created_at', 'author', 'subtasks']
         extra_kwargs = {
             'author': {'required': False} 
         }

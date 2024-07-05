@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 
 
-from tasks.views import AllTaskView, SubtaskView
+from tasks.views import AllTaskView, SubtaskView, UserListView
 from users.views import LoginView
 
 urlpatterns = [
@@ -28,4 +28,5 @@ urlpatterns = [
     path('task/<int:pk>/', AllTaskView.as_view()),
     path('task/<int:task_id>/subtasks/', SubtaskView.as_view()),
     path('task/<int:task_id>/subtasks/<int:pk>/', SubtaskView.as_view()),
+    path('api/users/', UserListView.as_view()),
 ]

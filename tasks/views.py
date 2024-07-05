@@ -9,6 +9,9 @@ from tasks.serializers import TaskSerializer , SubtaskSerializer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from django.contrib.auth.models import User
+from rest_framework import generics
+from .serializers import UserSerializer
 
 
 class AllTaskView(APIView):
@@ -201,4 +204,12 @@ class SubtaskView(APIView):
     
         subtask.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class UserListView(generics.ListAPIView):
+    """
+        Show an existing users for the authenticated user.
+
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
