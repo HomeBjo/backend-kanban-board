@@ -19,14 +19,17 @@ from django.urls import path
 
 
 from tasks.views import AllTaskView, SubtaskView, UserListView
-from users.views import LoginView
+from users.views import RegisterView, LoginView, UserDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', LoginView.as_view()),
+    path('register/', RegisterView.as_view()), 
+    path('login/', LoginView.as_view()), 
     path('task/', AllTaskView.as_view()),
     path('task/<int:pk>/', AllTaskView.as_view()),
     path('task/<int:task_id>/subtasks/', SubtaskView.as_view()),
     path('task/<int:task_id>/subtasks/<int:pk>/', SubtaskView.as_view()),
     path('api/users/', UserListView.as_view()),
+     path('user/<int:user_id>/', UserDetailView.as_view()),
+    
 ]
